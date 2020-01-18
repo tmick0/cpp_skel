@@ -51,10 +51,12 @@ function(skel_add_library)
         add_dependencies("${ARG_TARGET}" "${ARG_TARGET}_header_${_header}")
     endforeach(_header)
 
-    set_target_properties(
-        "${ARG_TARGET}"
-        PROPERTIES PUBLIC_HEADER "${HEADERS}"
-    )
+    if (NOT "${LIB_TYPE}" STREQUAL "INTERFACE")
+        set_target_properties(
+            "${ARG_TARGET}"
+            PROPERTIES PUBLIC_HEADER "${HEADERS}"
+        )
+    endif()
 
     install(
         TARGETS "${ARG_TARGET}"
