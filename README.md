@@ -13,6 +13,12 @@ skel_add_library(
     DESTINATION install_prefix
 )
 
+skel_add_executable(
+    TARGET program_name
+    SOURCES source_files...
+    LIBRARIES libs_to_link...
+)
+
 skel_add_test(
     TARGET test_name
     SOURCES source_files...

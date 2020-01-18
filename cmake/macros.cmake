@@ -65,7 +65,7 @@ function(skel_add_library)
 endfunction()
 
 
-function(skel_add_test)
+function(skel_add_executable)
 
     cmake_parse_arguments(ARG "" "TARGET" "SOURCES;LIBRARIES" ${ARGN})
 
@@ -84,6 +84,15 @@ function(skel_add_test)
             ${ARG_LIBRARIES}
         )
     endif()
+
+endfunction()
+
+
+function(skel_add_test)
+
+    cmake_parse_arguments(ARG "" "TARGET" "SOURCES;LIBRARIES" ${ARGN})
+
+    skel_add_executable(TARGET "${ARG_TARGET}" SOURCES "${ARG_SOURCES}" LIBRARIES ${ARG_LIBRARIES})
 
     add_test(
         "${ARG_TARGET}"
