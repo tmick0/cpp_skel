@@ -1,3 +1,27 @@
+
+function(skel_add_dependencies)
+    cmake_parse_arguments(ARG "" "TARGET" "LIBRARIES" ${ARGN})
+    foreach(_library ${ARG_LIBRARIES})
+
+        if(TARGET "${_library}")
+            get_target_property(libtype "${_library}" TYPE)
+            add_dependencies(
+                "${ARG_TARGET}"
+                ${_library}
+            )
+        else()
+            set(libtype "UNKNOWN")
+        endif()
+
+        if(NOT "${libtype}" STREQUAL "INTERFACE_LIBRARY")
+            target_link_libraries(
+                "${ARG_TARGET}"
+                ${_library}
+            )
+        endif()
+    endforeach(_library)
+endfunction()
+
 function(skel_add_library)
 
     cmake_parse_arguments(ARG "INTERFACE;STATIC;SHARED" "TARGET;DESTINATION" "SOURCES;HEADERS;LIBRARIES" ${ARGN})
@@ -21,19 +45,7 @@ function(skel_add_library)
         ${ARG_SOURCES}
     )
 
-    foreach(_library ${ARG_LIBRARIES})
-        get_target_property(libtype "${_library}" TYPE)
-        if(NOT "${libtype}" STREQUAL "INTERFACE_LIBRARY")
-            target_link_libraries(
-                "${ARG_TARGET}"
-                ${ARG_LIBRARIES}
-            )
-        endif()
-        add_dependencies(
-            "${ARG_TARGET}"
-            ${ARG_LIBRARIES}
-        )
-    endforeach(_library)
+    skel_add_dependencies(TARGET "${ARG_TARGET}" LIBRARIES ${ARG_LIBRARIES})
 
     foreach(_header ${ARG_HEADERS})
         add_custom_target(
@@ -79,16 +91,7 @@ function(skel_add_executable)
         ${ARG_SOURCES}
     )
 
-    if(ARG_LIBRARIES)
-        target_link_libraries(
-            "${ARG_TARGET}"
-            ${ARG_LIBRARIES}
-        )
-        add_dependencies(
-            "${ARG_TARGET}"
-            ${ARG_LIBRARIES}
-        )
-    endif()
+    skel_add_dependencies(TARGET "${ARG_TARGET}" LIBRARIES ${ARG_LIBRARIES})
 
 endfunction()
 
