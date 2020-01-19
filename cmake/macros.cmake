@@ -3,6 +3,8 @@ function(skel_add_dependencies)
     cmake_parse_arguments(ARG "" "TARGET" "LIBRARIES" ${ARGN})
     foreach(_library ${ARG_LIBRARIES})
 
+        get_target_property(targettype "${ARG_TARGET}" TYPE)
+
         if(TARGET "${_library}")
             get_target_property(libtype "${_library}" TYPE)
             add_dependencies(
@@ -14,10 +16,12 @@ function(skel_add_dependencies)
         endif()
 
         if(NOT "${libtype}" STREQUAL "INTERFACE_LIBRARY")
-            target_link_libraries(
-                "${ARG_TARGET}"
-                ${_library}
-            )
+            if(NOT "${targettype}" STREQUAL "INTERFACE_LIBRARY")
+                target_link_libraries(
+                    "${ARG_TARGET}"
+                    ${_library}
+                )
+            endif()
         endif()
     endforeach(_library)
 endfunction()
