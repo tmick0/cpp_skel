@@ -21,16 +21,19 @@ function(skel_add_library)
         ${ARG_SOURCES}
     )
 
-    if(ARG_LIBRARIES)
-        target_link_libraries(
-            "${ARG_TARGET}"
-            ${ARG_LIBRARIES}
-        )
+    foreach(_library ${ARG_LIBRARIES})
+        get_target_property(libtype "${_library}" TYPE)
+        if(NOT "${libtype}" STREQUAL "INTERFACE_LIBRARY")
+            target_link_libraries(
+                "${ARG_TARGET}"
+                ${ARG_LIBRARIES}
+            )
+        endif()
         add_dependencies(
             "${ARG_TARGET}"
             ${ARG_LIBRARIES}
         )
-    endif()
+    endforeach(_library)
 
     foreach(_header ${ARG_HEADERS})
         add_custom_target(
